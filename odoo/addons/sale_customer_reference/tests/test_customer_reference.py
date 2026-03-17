@@ -8,11 +8,12 @@ from odoo.addons.sale.tests.common import TestSaleCommon
 class TestCustomerReference(TestSaleCommon):
 
     def test_customer_reference_propagation(self):
+        self.partner.customer_reference_number = 'CRN-001'
+
         sale_order = self.env['sale.order'].create({
             'partner_id': self.partner.id,
             'partner_invoice_id': self.partner.id,
             'partner_shipping_id': self.partner.id,
-            'customer_reference_number': 'CRN-001',
             'order_line': [
                 Command.create({
                     'product_id': self.product.id,
@@ -27,7 +28,7 @@ class TestCustomerReference(TestSaleCommon):
         self.assertEqual(
             sale_order.picking_ids[:1].customer_reference_number,
             'CRN-001',
-            'The delivery order should show the sales order customer reference number.',
+            'The delivery order should show the contact customer reference number.',
         )
 
         invoice = sale_order._create_invoices()
@@ -35,18 +36,22 @@ class TestCustomerReference(TestSaleCommon):
         self.assertEqual(
             invoice.customer_reference_number,
             'CRN-001',
-            'The invoice should inherit the sales order customer reference number.',
+            'The invoice should show the contact customer reference number.',
         )
 
-        sale_order.customer_reference_number = 'CRN-002'
+        self.partner.customer_reference_number = 'CRN-002'
+
+        sale_order.invalidate_recordset(['customer_reference_number'])
+        sale_order.picking_ids.invalidate_recordset(['customer_reference_number'])
+        invoice.invalidate_recordset(['customer_reference_number'])
 
         self.assertEqual(
             sale_order.picking_ids[:1].customer_reference_number,
             'CRN-002',
-            'The delivery order should stay in sync with the sales order customer reference number.',
+            'The delivery order should stay in sync with the contact customer reference number.',
         )
         self.assertEqual(
             invoice.customer_reference_number,
             'CRN-002',
-            'Draft invoices should stay in sync with the sales order customer reference number.',
+            'Draft invoices should stay in sync with the contact customer reference number.',
         )

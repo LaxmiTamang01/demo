@@ -9,7 +9,7 @@
                 <field
                     name="customer_reference_number"
                     invisible="move_type not in ('out_invoice', 'out_refund', 'out_receipt')"
-                    readonly="state != 'draft'"
+                    readonly="1"
                 />
             </xpath>
         </field>

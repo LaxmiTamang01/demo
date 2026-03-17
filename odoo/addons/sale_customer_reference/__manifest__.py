@@ -7,6 +7,7 @@
     'summary': 'Track a customer reference number across sales, deliveries, and invoices',
     'depends': ['sale_management', 'sale_stock', 'account'],
     'data': [
+        'views/res_partner_views.xml',
         'views/sale_order_views.xml',
         'views/stock_picking_views.xml',
         'views/account_move_views.xml',
